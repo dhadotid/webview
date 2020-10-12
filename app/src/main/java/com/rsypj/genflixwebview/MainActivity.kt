@@ -15,7 +15,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val settings = webView.settings
-//        settings.userAgentString = "yudha"
+        settings.userAgentString = "chrome"
         settings.javaScriptEnabled = true
         settings.domStorageEnabled = true
         webView.webViewClient = object : WebViewClient(){
@@ -23,6 +23,21 @@ class MainActivity : AppCompatActivity() {
                 return false
             }
         }
+        webView.webChromeClient = object: WebChromeClient() {
+            @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+            override fun onPermissionRequest(request: PermissionRequest) {
+                val resources = request.resources
+                for (i in resources.indices) {
+                    if (PermissionRequest.RESOURCE_PROTECTED_MEDIA_ID == resources[i]) {
+                        request.grant(resources)
+                        return
+                    }
+                }
+
+                super.onPermissionRequest(request)
+            }
+        }
+
         webView.loadUrl("https://genflix.co.id")
     }
 }
